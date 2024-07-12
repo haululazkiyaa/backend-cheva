@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('user_id');
             $table->string('username', 50);
             $table->string('email', 30);
-            $table->string('password', 50);
+            $table->string('password', 255); // Increase to 255 characters
             $table->string('profile_picture_path', 255)->nullable();
             $table->string('id_card_picture_path', 255)->nullable();
             $table->timestamps();
