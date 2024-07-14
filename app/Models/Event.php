@@ -26,7 +26,6 @@ class Event extends Model
         'user_id',
         'poster_file_path',
     ];
-    
 
     public function user()
     {
@@ -43,3 +42,4 @@ class Event extends Model
         return $this->hasMany(UserEventHistory::class, 'event_id');
     }
 }
+
