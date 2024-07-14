@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class EventController extends Controller
@@ -44,15 +45,17 @@ class EventController extends Controller
             'finish_time' => 'required|date_format:H:i:s',
             'location' => 'required|string|max:30',
             'contact_person' => 'required|string|max:15',
-            'poster_file_path' => 'required|string|max:255',
             'registration_link' => 'required|string|max:255',
             'status' => 'required|in:oncoming,ongoing,finished',
             'user_id' => 'required|exists:users,user_id',
+            'poster_file' => 'required|image|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
+
+        $poster_file_path = $request->file('poster_file')->store('posters', 'public');
 
         $event = Event::create([
             'event_name' => $request->event_name,
@@ -64,11 +67,45 @@ class EventController extends Controller
             'finish_time' => $request->finish_time,
             'location' => $request->location,
             'contact_person' => $request->contact_person,
-            'poster_file_path' => $request->poster_file_path,
+            'poster_file_path' => $poster_file_path,
             'registration_link' => $request->registration_link,
             'status' => $request->status,
             'user_id' => $request->user_id,
         ]);
+
+        return new EventResource($event);
+    }
+
+    // API untuk mengupdate event
+    public function update(Request $request, $id)
+    {
+        $event = Event::find($id);
+
+        if (is_null($event)) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            // validasi lainnya
+            'poster_file' => 'image|max:2048', // validasi untuk file gambar
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        if ($request->hasFile('poster_file')) {
+            // menghapus file gambar lama dari storage
+            Storage::disk('public')->delete($event->poster_file_path);
+
+            // menyimpan file gambar baru ke storage dan mendapatkan path-nya
+            $poster_file_path = $request->file('poster_file')->store('posters', 'public');
+
+            $event->poster_file_path = $poster_file_path;
+        }
+
+        // update atribut lainnya
+        $event->save();
 
         return new EventResource($event);
     }

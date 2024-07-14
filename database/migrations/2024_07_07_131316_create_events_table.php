@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('contact_person', 15);
             $table->string('poster_file_path', 255)->nullable();
             $table->string('registration_link', 255)->nullable();
-            $table->enum('status', ['upcoming', 'ongoing', 'finished']);
+            $table->enum('status', ['oncoming', 'ongoing', 'finished']);
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('user_id')->on('users');
             $table->timestamps();
