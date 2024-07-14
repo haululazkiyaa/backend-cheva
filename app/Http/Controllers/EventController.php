@@ -77,66 +77,64 @@ class EventController extends Controller
     }
 
     public function update(Request $request, $id)
-{
-    // Mencari event berdasarkan ID
-    $event = Event::find($id);
+    {
+        // Mencari event berdasarkan ID
+        $event = Event::find($id);
 
-    if (is_null($event)) {
-        return response()->json(['message' => 'Event not found'], 404);
-    }
-
-    // Validasi input
-    $validator = Validator::make($request->all(), [
-        'event_name' => 'sometimes|required|string|max:255',
-        'description' => 'sometimes|required|string',
-        'category' => 'sometimes|required|string|max:20',
-        'start_date' => 'sometimes|required|date',
-        'finish_date' => 'sometimes|required|date',
-        'start_time' => 'sometimes|required|date_format:H:i:s',
-        'finish_time' => 'sometimes|required|date_format:H:i:s',
-        'location' => 'sometimes|required|string|max:30',
-        'contact_person' => 'sometimes|required|string|max:15',
-        'registration_link' => 'sometimes|required|string|max:255',
-        'status' => 'sometimes|required|in:oncoming,ongoing,finished',
-        'user_id' => 'sometimes|required|exists:users,user_id',
-        'poster_file' => 'sometimes|required|image|max:2048',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json($validator->errors(), 400);
-    }
-
-    // Memperbarui poster_file jika ada file baru
-    if ($request->hasFile('poster_file')) {
-        // Hapus file poster lama
-        if ($event->poster_file_path) {
-            Storage::disk('public')->delete($event->poster_file_path);
+        if (is_null($event)) {
+            return response()->json(['message' => 'Event not found'], 404);
         }
 
-        // Simpan file poster baru
-        $poster_file_path = $request->file('poster_file')->store('posters', 'public');
-        $event->poster_file_path = $poster_file_path;
+        // Validasi input
+        $validator = Validator::make($request->all(), [
+            'event_name' => 'sometimes|required|string|max:255',
+            'description' => 'sometimes|required|string',
+            'category' => 'sometimes|required|string|max:20',
+            'start_date' => 'sometimes|required|date',
+            'finish_date' => 'sometimes|required|date',
+            'start_time' => 'sometimes|required|date_format:H:i:s',
+            'finish_time' => 'sometimes|required|date_format:H:i:s',
+            'location' => 'sometimes|required|string|max:30',
+            'contact_person' => 'sometimes|required|string|max:15',
+            'registration_link' => 'sometimes|required|string|max:255',
+            'status' => 'sometimes|required|in:oncoming,ongoing,finished',
+            'user_id' => 'sometimes|required|exists:users,user_id',
+            'poster_file' => 'sometimes|required|image|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        // Memperbarui poster_file jika ada file baru
+        if ($request->hasFile('poster_file')) {
+            // Hapus file poster lama
+            if ($event->poster_file_path) {
+                Storage::disk('public')->delete($event->poster_file_path);
+            }
+
+            // Simpan file poster baru
+            $poster_file_path = $request->file('poster_file')->store('posters', 'public');
+            $event->poster_file_path = $poster_file_path;
+        }
+
+        // Memperbarui data event dengan input yang baru
+        $event->update($request->only([
+            'event_name',
+            'description',
+            'category',
+            'start_date',
+            'finish_date',
+            'start_time',
+            'finish_time',
+            'location',
+            'contact_person',
+            'registration_link',
+            'status',
+            'user_id',
+        ]));
+
+        // Mengembalikan response dengan resource
+        return new EventResource($event);
     }
-
-    // Memperbarui data event dengan input yang baru
-    $event->event_name = $request->get('event_name', $event->event_name);
-    $event->description = $request->get('description', $event->description);
-    $event->category = $request->get('category', $event->category);
-    $event->start_date = $request->get('start_date', $event->start_date);
-    $event->finish_date = $request->get('finish_date', $event->finish_date);
-    $event->start_time = $request->get('start_time', $event->start_time);
-    $event->finish_time = $request->get('finish_time', $event->finish_time);
-    $event->location = $request->get('location', $event->location);
-    $event->contact_person = $request->get('contact_person', $event->contact_person);
-    $event->registration_link = $request->get('registration_link', $event->registration_link);
-    $event->status = $request->get('status', $event->status);
-    $event->user_id = $request->get('user_id', $event->user_id);
-
-    // Simpan perubahan ke database
-    $event->save();
-
-    // Mengembalikan response dengan resource
-    return new EventResource($event);
-}
-
 }
