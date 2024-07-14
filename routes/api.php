@@ -8,24 +8,24 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// GET
+// tampilkan data
 Route::get('/', function () { return 'Hello World'; });
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']);
-Route::put('/users/{id}', [UserController::class, 'update']);
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{id}', [EventController::class, 'show']);
 Route::get('/event-registrations', [EventRegistrationController::class, 'index']);
 Route::get('/event-registrations/{id}', [EventRegistrationController::class, 'show']);
 
-// POST
+// tambah data
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.reset');
 Route::post('/password/forgot', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/events', [EventController::class, 'store']);
 
-// UPDATE
-Route::put('/events/{id}', [EventController::class, 'update']);
+// update data
+Route::put('/users/{id}', [UserController::class, 'update']);
+Route::post('/edit-events/{id}', [EventController::class, 'update']);
 
-// DELETE
+// delete data
