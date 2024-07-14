@@ -26,4 +26,4 @@ Route::post('/password/forgot', [ForgotPasswordController::class, 'sendResetLink
 Route::post('/events', [EventController::class, 'store']);
 
 // UPDATE
-Route::post('/events/{id}', [EventController::class, 'update']);
+Route::put('/events/{id}', [EventController::class, 'update']);
