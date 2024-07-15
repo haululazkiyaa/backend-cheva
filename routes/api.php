@@ -23,4 +23,5 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.reset');
 Route::post('/password/forgot', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/update-profile', [UserController::class, 'update'])->middleware('auth:sanctum'); 
+Route::post('/user-verification', [UserController::class, 'verification'])->middleware('auth:sanctum'); 
 Route::post('/events', [EventController::class, 'store']);
