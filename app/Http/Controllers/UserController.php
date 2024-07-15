@@ -5,23 +5,22 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function index() {
-        $users = User::all();
+    public function show() {
+        $user = Auth::user();
 
-        return UserResource::collection($users); 
-    }
-    public function show($id) {
-        return User::findOrFail($id);
+        return new UserResource($user);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $product = User::findOrFail($id);
-        $product->update($request->all());
+        $user = Auth::user();
 
-        return $product;
+        $user->update($request->all());
+
+        return new UserResource($user);
     }
 }
