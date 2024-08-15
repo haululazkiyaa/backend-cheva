@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,15 +12,16 @@ class User extends Authenticatable implements CanResetPassword
 {
     use HasFactory, Notifiable, HasApiTokens;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $primaryKey = 'user_id';
 
     protected $fillable = [
-        'username', 'email', 'password', 'profile_picture_path', 'id_card_picture_path'
+        'username',
+        'email',
+        'password',
+        'profile_picture_path',
+        'id_card_picture_path',
+        'is_verified',
+        'role',
     ];
 
     public function events()
@@ -39,21 +39,16 @@ class User extends Authenticatable implements CanResetPassword
         return $this->hasMany(UserEventHistory::class, 'user_id');
     }
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+    public function favorites()
+    {
+        return $this->hasMany(FavoriteEvent::class, 'user_id');
+    }
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [

@@ -41,5 +41,9 @@ class Event extends Model
     {
         return $this->hasMany(UserEventHistory::class, 'event_id');
     }
-}
 
+    public function favoritedBy()
+    {
+        return $this->hasMany(FavoriteEvent::class, 'event_id');
+    }
+}
